@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +30,11 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private UserData userData;
+
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "users_chats", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "chat_id", referencedColumnName = "id"))
+    private Set<Chat> chats;
 
 
     // Конструкторы
@@ -70,6 +76,9 @@ public class User {
     public UserData getUserData() {
         return userData;
     }
+    public Set<Chat> getChats() {
+        return chats;
+    }
 
 
     // Сеттеры
@@ -88,4 +97,20 @@ public class User {
     public void setUserData(UserData userData) {
         this.userData = userData;
     }
+
+
+    // Добавление/удаление
+    public void addToChat(Chat chat) {
+        this.chats.add(chat);
+        chat.getUsers().add(this);
+    }
+    public void removeFromChat(Chat chat) {
+        this.chats.remove(chat);
+        chat.getUsers().remove(this);
+    }
+
+//    @PreRemove
+//    private void removeChats() {
+//        this.chats.clear();
+//    }
 }
