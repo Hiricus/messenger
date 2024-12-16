@@ -17,10 +17,6 @@ public class User {
     @NonNull
     private String login;
 
-    @Column(name = "email", nullable = false)
-    @NonNull
-    private String email;
-
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -39,16 +35,11 @@ public class User {
 
     // Конструкторы
     public User() {}
-    public User(String login, String email, String password) {
+    public User(String login, String password) {
         if (login == null) {
             login = "";
         }
         this.login = login;
-
-        if (email == null) {
-            email = "";
-        }
-        this.email = email;
 
         if (password == null) {
             password = "";
@@ -63,9 +54,6 @@ public class User {
     }
     public String getLogin() {
         return login;
-    }
-    public String getEmail() {
-        return email;
     }
     public String getPassword() {
         return password;
@@ -84,9 +72,6 @@ public class User {
     // Сеттеры
     public void setLogin(String login) {
         this.login = login;
-    }
-    public void setEmail(String email) {
-        this.email = email;
     }
     public void setPassword(String password) {
         this.password = password;

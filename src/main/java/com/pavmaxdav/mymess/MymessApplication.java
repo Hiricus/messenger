@@ -1,5 +1,6 @@
 package com.pavmaxdav.mymess;
 
+import com.pavmaxdav.mymess.entity.Message;
 import com.pavmaxdav.mymess.entity.User;
 import com.pavmaxdav.mymess.entity.UserData;
 import com.pavmaxdav.mymess.repository.UserRepository;
@@ -8,6 +9,8 @@ import com.pavmaxdav.mymess.service.UserDataService;
 import com.pavmaxdav.mymess.service.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.Optional;
 
 @SpringBootApplication
 public class MymessApplication {
@@ -20,32 +23,42 @@ public class MymessApplication {
 		ChatService chatService = context.getBean(ChatService.class);
 
 
+//		userService.addUser(createUserMe());
+//		userService.addUser(createUserNotMe());
+//		userService.removeByLogin("Hiricus");
 
-		//userRepository.save(createUserMe());
-		//userService.removeByLogin("Hiricus");
 		//userDataService.removeById(102);
 
-		//userRepository.save(createUserNotMe());
 
-		//chatService.createEmptyChat("Личка типа", false);
+//		chatService.createEmptyChat("Личка типа", false);
+//		chatService.createEmptyChat("Групповая беседа типа", true);
+//		chatService.createEmptyChat("Личка типа, но чужая", false);
 
+//		chatService.addUserToChat(1, "Hiricus");
+//		chatService.addUserToChat(1, "Bananaws");
 //		chatService.addUserToChat(2, "Hiricus");
 //		chatService.addUserToChat(2, "Bananaws");
 
-//		chatService.removeUserFromChat(1, "Bananaws");
+//		chatService.removeUserFromChat(252, "Bananaws");
 
-//		chatService.removeChat(2);
+//		chatService.removeChat(52);
+
+//		Optional<Message> optionalMessage = chatService.sendMessageToChat("Я меня ты себя", "Hiricus", 1);
+//		Optional<Message> optionalMessage = chatService.removeMessageFromChat(52, "Hiricus");
+//		System.out.println(optionalMessage);
+
+//		chatService.removeChat(1);
 	}
 
 	public static User createUserMe() {
-		User user = new User("Hiricus", "hexaeder@yandex.ru", "2556145");
+		User user = new User("Hiricus", "2556145");
 		UserData userData = new UserData(user, "setting1, setting2, theme=dark", "Хто я?");
 		user.setUserData(userData);
 		return user;
 	}
 
 	public static User createUserNotMe() {
-		User user = new User("Bananaws", "banana@mail.ru", "123");
+		User user = new User("Bananaws", "123");
 		UserData userData = new UserData(user, "setting0, setting3, theme=dark", "Инфа типа");
 		user.setUserData(userData);
 		return user;
