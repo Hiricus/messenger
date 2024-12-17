@@ -22,10 +22,10 @@ public class Chat {
     @Column(name = "last_active")
     private LocalDateTime lastActive;
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToMany(mappedBy = "chats", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "chats", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
     private Set<User> users = new HashSet<>();
 
 

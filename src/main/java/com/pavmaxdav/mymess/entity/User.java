@@ -23,7 +23,7 @@ public class User {
     @Column(name = "last_online")
     private LocalDateTime lastOnline;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @PrimaryKeyJoinColumn
     private UserData userData;
 

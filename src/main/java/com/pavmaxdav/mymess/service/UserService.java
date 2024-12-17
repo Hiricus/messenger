@@ -1,5 +1,6 @@
 package com.pavmaxdav.mymess.service;
 
+import com.pavmaxdav.mymess.entity.Chat;
 import com.pavmaxdav.mymess.entity.User;
 import com.pavmaxdav.mymess.entity.UserData;
 import com.pavmaxdav.mymess.repository.UserRepository;
@@ -7,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -71,5 +72,22 @@ public class UserService {
         }
 
         return optionalUser;
+    }
+
+    @Transactional
+    public List<Chat> getUsersChats(String login) {
+        Optional<User> optionalUser = this.findUserByLogin(login);
+
+        // Если такого пользователя нет - возвращаем пустой массив
+        if (optionalUser.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Получаем массив чатов пользователя и сортируем его по дате последней активности
+        ArrayList<Chat> chats = new ArrayList<>(optionalUser.get().getChats());
+        Collections.sort(chats, Comparator.comparing(Chat::getLastActive));
+        Collections.reverse(chats);
+
+        return chats;
     }
 }
