@@ -27,7 +27,6 @@ public class TestController {
         this.userService = userService;
     }
 
-
     @GetMapping("/getAChat/{chatId}")
     public ChatDTO getSomeChat(@PathVariable Integer chatId) {
         Optional<Chat> optionalChat = chatService.getChat(chatId);

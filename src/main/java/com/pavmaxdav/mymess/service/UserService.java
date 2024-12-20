@@ -5,13 +5,19 @@ import com.pavmaxdav.mymess.entity.User;
 import com.pavmaxdav.mymess.entity.UserData;
 import com.pavmaxdav.mymess.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
@@ -61,6 +67,14 @@ public class UserService {
     @Transactional
     public Optional<User> findUserByLogin(String login) {
         return userRepository.findUserByLogin(login);
+    }
+
+
+    @Override
+    @Transactional
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        User userEntity = userRepository.findUserByLogin(login).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new org.springframework.security.core.userdetails.User(userEntity.getLogin(), userEntity.getPassword(), new HashSet<GrantedAuthority>());
     }
 
     // Удаление пользователя по логину
