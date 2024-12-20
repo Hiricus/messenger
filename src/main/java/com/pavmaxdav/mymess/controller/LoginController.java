@@ -10,7 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,22 +39,23 @@ class LoginController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping("/login")
-    String login() {
-        return "login";
-    }
+//    @GetMapping("/login")
+//    String login() {
+//        return "login";
+//    }
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
-//        try {
-//            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-//                    authRequest.getLogin(), authRequest.getPassword()
-//            ));
-//        } catch (BadCredentialsException e) {
-//            return new ResponseEntity<>(new ErrorDTO(
-//                    HttpStatus.UNAUTHORIZED.value(),"Failed to authorized"),
-//                    HttpStatus.UNAUTHORIZED);
-//        }
+        try {
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                    authRequest.getLogin(), authRequest.getPassword()
+            ));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (BadCredentialsException e) {
+            return new ResponseEntity<>(new ErrorDTO(
+                    HttpStatus.UNAUTHORIZED.value(),"Failed to authenticate"),
+                    HttpStatus.UNAUTHORIZED);
+        }
 
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getLogin());
         String token = jwtUtils.generateJWT(userDetails);
@@ -57,9 +63,12 @@ class LoginController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterDTO registerDTO) {
-        // Check if user exist
-        // TODO
+    public ResponseEntity<?> register(@RequestBody RegisterDTO registerDTO) {
+        if (userService.findUserByLogin(registerDTO.getLogin()).isPresent()) {
+            return new ResponseEntity<>(new ErrorDTO(
+                    HttpStatus.BAD_REQUEST.value(),"Login is already taken!"),
+                    HttpStatus.BAD_REQUEST);
+        }
 
         User user = new User(
                 registerDTO.getLogin(),
@@ -68,6 +77,5 @@ class LoginController {
         userService.addUser(user);
 
         return new ResponseEntity<>("User registration succesfull!", HttpStatus.OK);
-
     }
 }

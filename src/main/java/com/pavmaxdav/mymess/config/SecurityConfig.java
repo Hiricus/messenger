@@ -21,11 +21,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-
-    public JwtAuthenticationFilter jwtAuthenticationFilter;
+    private UserService userService;
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Autowired
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserService userService) {
+        this.userService = userService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
@@ -43,22 +44,10 @@ public class SecurityConfig {
 //                        .permitAll()
 //                )
                 .authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/login").permitAll()
-                                .requestMatchers("/register").permitAll()
-                .anyRequest().authenticated()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/register").permitAll()
+                        .anyRequest().authenticated()
                 )
-//
-//                .formLogin(form -> form
-//                        .loginPage("/login").permitAll()
-//                )
-//                .logout(logout -> logout
-//                        .permitAll()
-//                ).
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/login").permitAll()
-//                        .requestMatchers("/register").permitAll()
-//                        .anyRequest().permitAll() // Разрешаем все запросы
-//                );
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -68,22 +57,6 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return daoAuthenticationProvider;
-    }
-
-    @Bean
-    public UserDetailsService users() {
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("password")
-                .roles("ADMIN")
-                .build();
-        UserDetails user = User.builder()
-                .username("user")
-                .password("password")
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin, user);
     }
 
     @Bean

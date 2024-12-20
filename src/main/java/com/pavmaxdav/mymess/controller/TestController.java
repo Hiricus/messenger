@@ -48,4 +48,12 @@ public class TestController {
 
         return chatDTOS;
     }
+
+    // For testing
+    // TODO
+    // change to getUserInfo
+    @GetMapping("/getUserLogin/{login}")
+    public String getUserLogin(@PathVariable String login) {
+        return login;
+    }
 }
