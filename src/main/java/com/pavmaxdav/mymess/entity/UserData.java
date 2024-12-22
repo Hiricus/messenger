@@ -49,6 +49,9 @@ public class UserData {
         return aboutMe;
     }
     public byte[] getAvatarImage() {
+        if (this.avatarImage == null) {
+            return null;
+        }
         return avatarImage;
     }
 

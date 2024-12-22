@@ -6,7 +6,6 @@ import com.pavmaxdav.mymess.entity.UserData;
 import com.pavmaxdav.mymess.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -34,6 +32,8 @@ public class UserService implements UserDetailsService {
         }
 
         User user = new User(login, password);
+        // Добавляем пользователю пустые данные
+        user.setUserData(new UserData(user));
         userRepository.save(user);
         return Optional.of(user);
     }
@@ -43,7 +43,11 @@ public class UserService implements UserDetailsService {
         if (userRepository.findUserByLogin(user.getLogin()).isPresent()) {
             return Optional.empty();
         }
-
+        // Добавляем пустые данные пользователю
+        if (user.getUserData() == null) {
+            user.setUserData(new UserData(user));
+        }
+        // Сохраняем пользователя
         userRepository.save(user);
         return Optional.of(user);
     }
@@ -69,6 +73,11 @@ public class UserService implements UserDetailsService {
         return userRepository.findUserByLogin(login);
     }
 
+    @Transactional
+    public Optional<User> findUserById(Integer id) {
+        return userRepository.findById(id);
+    }
+
 
     @Override
     @Transactional
@@ -89,7 +98,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public List<Chat> getUsersChats(String login) {
+    public List<Chat> getUsersChatsSorted(String login) {
         Optional<User> optionalUser = this.findUserByLogin(login);
 
         // Если такого пользователя нет - возвращаем пустой массив

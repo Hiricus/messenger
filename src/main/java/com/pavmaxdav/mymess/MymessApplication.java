@@ -1,5 +1,6 @@
 package com.pavmaxdav.mymess;
 
+import com.pavmaxdav.mymess.dto.MessageDTO;
 import com.pavmaxdav.mymess.entity.Message;
 import com.pavmaxdav.mymess.entity.User;
 import com.pavmaxdav.mymess.entity.UserData;
@@ -13,6 +14,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,7 +41,7 @@ public class MymessApplication {
 //		chatService.createEmptyChat("Личка типа", false);
 //		chatService.createEmptyChat("Групповая беседа типа", true);
 //		chatService.createEmptyChat("Личка типа, но чужая", false);
-
+//
 //		chatService.addUserToChat(1, "Hiricus");
 //		chatService.addUserToChat(1, "Bananaws");
 //		chatService.addUserToChat(2, "Hiricus");
@@ -49,7 +51,7 @@ public class MymessApplication {
 
 //		chatService.removeChat(52);
 
-//		Optional<Message> optionalMessage = chatService.sendMessageToChat("Сообщение типа", "Hiricus", 1);
+//		Optional<Message> optionalMessage = chatService.sendMessageToChat("Левое сообщение типа", "Hiricus", 2);
 //		Optional<Message> optionalMessage = chatService.removeMessageFromChat(52, "Hiricus");
 //		System.out.println(optionalMessage);
 
@@ -60,6 +62,11 @@ public class MymessApplication {
 
 //		User user = userService.findUserByLogin("Bananaws").get();
 //		System.out.println(userMapper.toDTO(user));
+
+		List<MessageDTO> messageDTOS = chatService.getAllMessagesFromChat(1);
+		for (MessageDTO dto : messageDTOS) {
+			System.out.println(dto);
+		}
 	}
 
 	public static User createUserMe() {

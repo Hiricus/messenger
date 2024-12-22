@@ -1,18 +1,31 @@
 package com.pavmaxdav.mymess.dto;
 
-import com.pavmaxdav.mymess.entity.AttachedResource;
+import com.pavmaxdav.mymess.entity.attached.ResourceType;
 
 public class CreateMessageDTO {
     private Integer userId;
     private Integer chatId;
     private String content;
-    private AttachedResource attachedResource = null;
+
+    private String resourceName;
+    private String resource;
+    private ResourceType resourceType;
+
 
     // Конструкторы
     public CreateMessageDTO(Integer userId, Integer chatId, String content) {
         this.userId = userId;
         this.chatId = chatId;
         this.content = content;
+    }
+    public CreateMessageDTO(Integer userId, Integer chatId, String content, String resourceName, String resource, ResourceType resourceType) {
+        this.userId = userId;
+        this.chatId = chatId;
+        this.content = content;
+
+        this.resourceName = resourceName;
+        this.resource = resource;
+        this.resourceType = resourceType;
     }
 
     // Геттеры
@@ -25,8 +38,24 @@ public class CreateMessageDTO {
     public String getContent() {
         return content;
     }
-    public AttachedResource getAttachedResource() {
-        return attachedResource;
+
+    public String getResourceName() {
+        if (resource == null) {
+            return null;
+        }
+        return resourceName;
+    }
+    public String getResource() {
+        if (resource == null) {
+            return null;
+        }
+        return resource;
+    }
+    public ResourceType getResourceType() {
+        if (resourceType == null) {
+            return null;
+        }
+        return resourceType;
     }
 
     // Сеттеры
@@ -39,7 +68,13 @@ public class CreateMessageDTO {
     public void setContent(String content) {
         this.content = content;
     }
-    public void setAttachedResource(AttachedResource attachedResource) {
-        this.attachedResource = attachedResource;
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+    public void setResource(String resource) {
+        this.resource = resource;
+    }
+    public void setResourceType(ResourceType resourceType) {
+        this.resourceType = resourceType;
     }
 }

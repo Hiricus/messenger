@@ -1,30 +1,35 @@
 package com.pavmaxdav.mymess.service;
 
+import com.pavmaxdav.mymess.dto.MessageDTO;
 import com.pavmaxdav.mymess.entity.Chat;
 import com.pavmaxdav.mymess.entity.Message;
 import com.pavmaxdav.mymess.entity.User;
+import com.pavmaxdav.mymess.mapper.MessageMapper;
 import com.pavmaxdav.mymess.repository.ChatRepository;
 import com.pavmaxdav.mymess.repository.MessageRepository;
 import com.pavmaxdav.mymess.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ChatService {
     private ChatRepository chatRepository;
     private MessageRepository messageRepository;
     private UserRepository userRepository;
+    private MessageMapper messageMapper;
 
     @Autowired
-    public ChatService(ChatRepository chatRepository, MessageRepository messageRepository, UserRepository userRepository) {
+    public ChatService(ChatRepository chatRepository, MessageRepository messageRepository, UserRepository userRepository, MessageMapper messageMapper) {
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
+        this.messageMapper = messageMapper;
     }
 
     // Получения чата из бд
@@ -137,5 +142,41 @@ public class ChatService {
         Chat chat = message.getChat();
         chat.removeMessage(message);
         return Optional.of(message);
+    }
+
+    // Получить все сообщения из чата, отсортированные по дате
+    public List<MessageDTO> getAllMessagesFromChat(Integer chatId) {
+        Optional<Chat> optionalChat = chatRepository.findById(chatId);
+        // Если такого чата нет - возвращаем пустой список
+        if (optionalChat.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Message> messages = messageRepository.findMessageByChat_IdOrderBySentAt(chatId);
+        Collections.reverse(messages);
+        ArrayList<MessageDTO> messageDTOS = new ArrayList<>();
+        for (Message message : messages) {
+            messageDTOS.add(messageMapper.toDTO(message));
+        }
+
+        return messageDTOS;
+    }
+
+    public List<MessageDTO> getLastMessagesFromChat(Integer chatId, Integer lastN) {
+        Optional<Chat> optionalChat = chatRepository.findById(chatId);
+        // Если такого чата нет - возвращаем пустой список
+        if (optionalChat.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        Pageable pageable = PageRequest.of(0, lastN, Sort.by("sentAt").descending());
+        List<Message> messages = messageRepository.findMessageByChat_Id(chatId, pageable);
+
+        ArrayList<MessageDTO> messageDTOS = new ArrayList<>();
+        for (Message message : messages) {
+            messageDTOS.add(messageMapper.toDTO(message));
+        }
+
+        return messageDTOS;
     }
 }

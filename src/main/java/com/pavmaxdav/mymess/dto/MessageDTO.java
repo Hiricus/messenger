@@ -1,7 +1,5 @@
 package com.pavmaxdav.mymess.dto;
 
-import com.pavmaxdav.mymess.entity.AttachedResource;
-
 import java.time.LocalDateTime;
 
 public class MessageDTO {
@@ -9,7 +7,7 @@ public class MessageDTO {
     private Integer authorId;
     private String content;
     private LocalDateTime sentAt;
-    private AttachedResource attachedResource = null;
+    private AttachedResourceDTO attachedResource;
 
     // Конструкторы
     public MessageDTO() {}
@@ -18,6 +16,13 @@ public class MessageDTO {
         this.authorId = authorId;
         this.content = content;
         this.sentAt = sentAt;
+    }
+    public MessageDTO(Integer id, Integer authorId, String content, LocalDateTime sentAt, AttachedResourceDTO attachedResource) {
+        this.id = id;
+        this.authorId = authorId;
+        this.content = content;
+        this.sentAt = sentAt;
+        this.attachedResource = attachedResource;
     }
 
     // Геттеры
@@ -33,7 +38,10 @@ public class MessageDTO {
     public LocalDateTime getSentAt() {
         return sentAt;
     }
-    public AttachedResource getAttachedResource() {
+    public AttachedResourceDTO getAttachedResource() {
+        if (attachedResource == null) {
+            return null;
+        }
         return attachedResource;
     }
 
@@ -49,6 +57,9 @@ public class MessageDTO {
     }
     public void setSentAt(LocalDateTime sentAt) {
         this.sentAt = sentAt;
+    }
+    public void setAttachedResource(AttachedResourceDTO attachedResource) {
+        this.attachedResource = attachedResource;
     }
 
 

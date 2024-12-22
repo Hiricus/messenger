@@ -1,21 +1,30 @@
 package com.pavmaxdav.mymess.dto;
 
+import com.pavmaxdav.mymess.entity.attached.Settings;
+
 import java.util.Arrays;
 
 public class UserDTO {
     private Integer id;
     private String login;
-    private byte[] avatarImage = new byte[0];
+    private String avatarImage = "";
+    private Settings settings = new Settings();
 
     // Конструкторы
     public UserDTO(Integer id, String login) {
         this.id = id;
         this.login = login;
     }
-    public UserDTO(Integer id, String login, byte[] avatarImage) {
+    public UserDTO(Integer id, String login, String avatarImage) {
         this.id = id;
         this.login = login;
         this.avatarImage = avatarImage;
+    }
+    public UserDTO(Integer id, String login, String avatarImage, Settings settings) {
+        this.id = id;
+        this.login = login;
+        this.avatarImage = avatarImage;
+        this.settings = settings;
     }
 
     // Геттеры
@@ -25,8 +34,11 @@ public class UserDTO {
     public String getLogin() {
         return login;
     }
-    public byte[] getAvatarImage() {
+    public String getAvatarImage() {
         return avatarImage;
+    }
+    public Settings getSettings() {
+        return settings;
     }
 
     // Сеттеры
@@ -36,17 +48,19 @@ public class UserDTO {
     public void setLogin(String login) {
         this.login = login;
     }
-    public void setAvatarImage(byte[] avatarImage) {
+    public void setAvatarImage(String avatarImage) {
         this.avatarImage = avatarImage;
     }
-
+    public void setSettings(Settings settings) {
+        this.settings = settings;
+    }
 
     @Override
     public String toString() {
         return "UserDTO{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
-                ", avatarImage=" + Arrays.toString(avatarImage) +
+                ", avatarImage=" + avatarImage +
                 '}';
     }
 }

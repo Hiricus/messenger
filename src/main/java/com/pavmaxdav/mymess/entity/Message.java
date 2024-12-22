@@ -27,6 +27,9 @@ public class Message {
     @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
 
+    @OneToOne(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private AttachedResource attachedResource;
+
 
     // Конструкторы
     public Message() {}
@@ -37,7 +40,14 @@ public class Message {
 
         this.sentAt = LocalDateTime.now();
     }
+    public Message(String content, User author, Chat chat, AttachedResource attachedResource) {
+        this.content = content;
+        this.author = author;
+        this.chat = chat;
+        this.attachedResource = attachedResource;
 
+        this.sentAt = LocalDateTime.now();
+    }
 
     // Геттеры
     public Integer getId() {
@@ -54,6 +64,14 @@ public class Message {
     }
     public Chat getChat() {
         return chat;
+    }
+
+    // TODO Сделать ресурс в БД
+    public AttachedResource getAttachedResource() {
+        if (attachedResource == null) {
+            return null;
+        }
+        return attachedResource;
     }
 
 
