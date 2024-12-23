@@ -34,6 +34,11 @@ public class UserData {
         this.settings = settings;
         this.aboutMe = aboutMe;
     }
+    public UserData(String settings, String aboutMe, byte[] avatarImage) {
+        this.settings = settings;
+        this.aboutMe = aboutMe;
+        this.avatarImage = avatarImage;
+    }
 
     // Геттеры
     public Integer getId() {
@@ -64,5 +69,8 @@ public class UserData {
     }
     public void setAvatarImage(byte[] avatarImage) {
         this.avatarImage = avatarImage;
+    }
+    public void setUser(User user) {
+        this.user = user;
     }
 }

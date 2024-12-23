@@ -1,10 +1,9 @@
 package com.pavmaxdav.mymess.controller;
 
 import com.pavmaxdav.mymess.dto.*;
-import com.pavmaxdav.mymess.entity.AttachedResource;
-import com.pavmaxdav.mymess.entity.Chat;
-import com.pavmaxdav.mymess.entity.Message;
-import com.pavmaxdav.mymess.entity.User;
+import com.pavmaxdav.mymess.entity.*;
+import com.pavmaxdav.mymess.entity.attached.Settings;
+import com.pavmaxdav.mymess.entity.attached.Theme;
 import com.pavmaxdav.mymess.mapper.ChatMapper;
 import com.pavmaxdav.mymess.mapper.UserMapper;
 import com.pavmaxdav.mymess.service.ChatService;
@@ -34,6 +33,11 @@ public class TestController {
         this.chatMapper = chatMapper;
         this.userMapper = userMapper;
         this.messagingTemplate = messagingTemplate;
+    }
+
+    @GetMapping("/test/triggerSocket")
+    public void triggerSocket() {
+        messagingTemplate.convertAndSend("/chatUpdates", "hello chat");
     }
 
     @GetMapping("/getAChat/{chatId}")
@@ -90,7 +94,7 @@ public class TestController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    // Инфа о любом пользователе
+    // Инфа о любом пользователе по id
     @GetMapping("/api/users/byId/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable Integer id) {
         Optional<User> optionalUser = userService.findUserById(id);
@@ -106,7 +110,7 @@ public class TestController {
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    // Получить инфу о пользователе
+    // Инфа о любом пользователе по логину
     @GetMapping("/api/users/byLogin/{login}")
     public ResponseEntity<Object> getUserByLogin(@PathVariable String login) {
         Optional<User> optionalUser = userService.findUserByLogin(login);
@@ -120,6 +124,25 @@ public class TestController {
         // Зануляем настройки чтоб не спалить чужие данные
         UserDTO userDTO = userMapper.toDTO(user, false);
         return new ResponseEntity<>(userDTO, HttpStatus.OK);
+    }
+
+    // Изменить аватарку
+    @PostMapping("/api/profile/setAvatar")
+    public ResponseEntity<Object> setAvatar(@RequestBody AttachedResourceDTO avatarDTO, @AuthenticationPrincipal UserDetails userDetails) {
+        // Если не нашли пользователя - 404
+        Optional<User> optionalUser = userService.findUserByLogin(userDetails.getUsername());
+        if (optionalUser.isEmpty()) {
+            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        Optional<UserData> optionalUserData = userService.getUserData(userDetails.getUsername());
+        if (optionalUserData.isEmpty()) {
+            userService.updateUserData(userDetails.getUsername(), new UserData("", "", avatarDTO.getResourceByte()));
+        } else {
+            userService.updateUserData(userDetails.getUsername(), new UserData(optionalUserData.get().getSettings(), optionalUserData.get().getAboutMe(), avatarDTO.getResourceByte()));
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     // Получить все свои чаты
@@ -190,8 +213,24 @@ public class TestController {
             }
         }
 
-        // Получаем и отдаём добавленный чат
+        // Получаем добавленный чат
         Optional<Chat> addedChat = chatService.getChat(chat.getId());
+
+        // Рассылка всем пользователям
+        for (User user : addedChat.get().getUsers()) {
+            // Получаем список чатов пользователя
+            List<Chat> userChats = userService.getUsersChatsSorted(user.getLogin());
+
+            // Делаем список дто чатов
+            List<ChatDTO> chatDTOS = new ArrayList<>();
+            for (Chat usersChat : userChats) {
+                chatDTOS.add(chatMapper.toDTO(usersChat));
+            }
+            // Рассылаем всем пользователям
+            messagingTemplate.convertAndSendToUser(user.getLogin(), "/chatListUpdates", chatDTOS);
+        }
+
+        // Отдаём добавленный чат
         ChatDTO addedChatDTO = chatMapper.toDTO(addedChat.get());
         return new ResponseEntity<>(addedChatDTO, HttpStatus.CREATED);
     }
@@ -200,6 +239,7 @@ public class TestController {
     @PostMapping("/api/chats/sendMessage")
     public ResponseEntity<Object> sendMessage(@RequestBody CreateMessageDTO createMessageDTO) {
 //        System.out.println("trying to post new message: " + createMessageDTO);
+        messagingTemplate.convertAndSend("/chatUpdates", "hello chat");
 
         Optional<User> optionalUser = userService.findUserById(createMessageDTO.getUserId());
         // Если автор не найден - 404
@@ -231,9 +271,9 @@ public class TestController {
             BigChatDTO fullChatDTO = chatMapper.toBigChatDTO(chat);
 
             // Попытка глобальной рассылки
+            messagingTemplate.convertAndSend("/chatUpdates/" + chat.getId(), fullChatDTO);
+            System.out.println("Sending to chat: " + chat.getId());
             for (User user : chat.getUsers()) {
-                messagingTemplate.convertAndSend("/chatUpdates/" + chat.getId(), fullChatDTO);
-                System.out.println("Sending to chat: " + chat.getId());
 //                messagingTemplate.convertAndSendToUser(user.getLogin(), "/chatUpdates", fullChatDTO);
 
 

@@ -36,7 +36,7 @@ public class SecurityConfig {
         http
                 .cors((cors) -> cors.disable())
                 .csrf((csrf) -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
 //                .formLogin(form -> form
 //                        .loginPage("/login")
@@ -45,10 +45,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) ->
                                 authorize.requestMatchers("/login").permitAll()
                                 .requestMatchers("/register").permitAll()
+                                        .requestMatchers("/test/**").permitAll()
 //                        .requestMatchers("/api/chats/create").permitAll()
 //                        .requestMatchers("/ws").permitAll()
                                 .requestMatchers("/api/auth").permitAll()
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

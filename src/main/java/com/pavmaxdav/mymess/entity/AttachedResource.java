@@ -5,6 +5,7 @@ import com.pavmaxdav.mymess.entity.attached.ResourceType;
 import jakarta.persistence.*;
 
 import java.util.Arrays;
+import java.util.Base64;
 
 @Entity
 @Table(name = "attached_resources")
@@ -33,6 +34,11 @@ public class AttachedResource {
     public AttachedResource(String name, byte[] resource, ResourceType resourceType) {
         this.name = name;
         this.resource = resource;
+        this.resourceType = resourceType;
+    }
+    public AttachedResource(String name, String resource, ResourceType resourceType) {
+        this.name = name;
+        this.resource = Base64.getDecoder().decode(resource);
         this.resourceType = resourceType;
     }
     public AttachedResource(AttachedResourceDTO attachedResourceDTO) {

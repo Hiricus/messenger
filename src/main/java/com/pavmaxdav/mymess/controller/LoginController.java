@@ -50,7 +50,6 @@ class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthToken(@RequestBody JwtRequest authRequest) {
-        System.out.println("Logging in");
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     authRequest.getLogin(), authRequest.getPassword()
@@ -63,6 +62,7 @@ class LoginController {
         }
 
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getLogin());
+        System.out.println("Logging in as " + userDetails.getUsername());
         String token = jwtUtils.generateJWT(userDetails);
         return ResponseEntity.ok(new JwtResponse(token));
     }

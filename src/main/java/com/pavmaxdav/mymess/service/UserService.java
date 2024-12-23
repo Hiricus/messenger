@@ -5,6 +5,7 @@ import com.pavmaxdav.mymess.entity.User;
 import com.pavmaxdav.mymess.entity.UserData;
 import com.pavmaxdav.mymess.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 
 @Service
@@ -54,6 +56,29 @@ public class UserService implements UserDetailsService {
 
     // Добавить пользователю дополнительные данные
     @Transactional
+    public Optional<UserData> getUserData(Integer userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        // Если такого пользователя нет - вернуть пустой Optional
+        if (optionalUser.isEmpty()) {
+            return Optional.empty();
+        }
+
+        User user = optionalUser.get();
+        return Optional.of(user.getUserData());
+    }
+    @Transactional
+    public Optional<UserData> getUserData(String login) {
+        Optional<User> optionalUser = userRepository.findUserByLogin(login);
+        // Если такого пользователя нет - вернуть пустой Optional
+        if (optionalUser.isEmpty()) {
+            return Optional.empty();
+        }
+
+        User user = optionalUser.get();
+        return Optional.of(user.getUserData());
+    }
+
+    @Transactional
     public Optional<UserData> addUserData(Integer userId, UserData userData) {
         Optional<User> optionalUser = userRepository.findById(userId);
 
@@ -65,6 +90,24 @@ public class UserService implements UserDetailsService {
         User user = optionalUser.get();
         user.setUserData(userData);
         return Optional.of(userData);
+    }
+
+    // Обновить данные пользователя
+    @Transactional
+    public Optional<UserData> updateUserData(String login, UserData userData) {
+        Optional<User> optionalUser = userRepository.findUserByLogin(login);
+        // Если такого пользователя нет - вернуть пустой Optional
+        if (optionalUser.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // Получаем данные пользователя
+        UserData userDataInDB = optionalUser.get().getUserData();
+        // Обновляем их
+        userDataInDB.setAboutMe(userDataInDB.getAboutMe());
+        userDataInDB.setAvatarImage(userData.getAvatarImage());
+        // Возвращаем
+        return Optional.of(userDataInDB);
     }
 
     // Поиск пользователя

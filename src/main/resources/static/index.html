@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket and HTTP GET Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.4.0/dist/stomp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+</head>
+<body>
+<h2>WebSocket and HTTP GET Test - /test/triggerSocket</h2>
+
+<!-- Кнопка для отправки GET запроса -->
+<button id="triggerSocketButton">Send GET Request to /test/triggerSocket</button>
+
+<div id="messages"></div>
+
+<script>
+    // URL WebSocket сервера (укажите свой адрес)
+    const wsUrl = 'ws://localhost:8090/ws'; // Пример, замените на ваш сервер
+
+    let stompClient = null;
+
+    // Функция для подключения к WebSocket
+    const connectWebSocket = () => {
+        const socket = new SockJS(wsUrl);
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, (frame) => {
+            console.log('Connected: ' + frame);
+
+            // Подписка на топик /chatUpdates
+            stompClient.subscribe('/chatUpdates', (message) => {
+                console.log('Received: ' + message.body);
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.innerHTML += `<p>${message.body}</p>`;
+            });
+        }, (error) => {
+            console.error('Error connecting to WebSocket:', error);
+        });
+    };
+
+    // Отправка HTTP GET запроса на /test/triggerSocket
+    const sendGetRequest = () => {
+        fetch('/test/triggerSocket', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('GET request successful');
+                } else {
+                    console.error('GET request failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error during GET request:', error);
+            });
+    };
+
+    // Подключение к WebSocket при загрузке страницы
+    connectWebSocket();
+
+    // Обработчик для кнопки отправки GET запроса
+    document.getElementById('triggerSocketButton').addEventListener('click', () => {
+        sendGetRequest();
+    });
+</script>
+</body>
+</html>
