@@ -35,14 +35,6 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors((cors) -> cors.disable())
-//                .csrf((csrf) -> csrf
-//                        .ignoringRequestMatchers("/login")
-//                        .ignoringRequestMatchers("/register")
-//                        .ignoringRequestMatchers("/admin/**")
-//                        .ignoringRequestMatchers("/api/chats/**")
-////                        .ignoringRequestMatchers("/api/**")
-//                        .ignoringRequestMatchers("/ws")
-//                )
                 .csrf((csrf) -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
@@ -50,12 +42,13 @@ public class SecurityConfig {
 //                        .loginPage("/login")
 //                        .permitAll()
 //                )
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/login").permitAll()
-                        .requestMatchers("/register").permitAll()
-                        .requestMatchers("/api/chats/create").permitAll()
+                .authorizeHttpRequests((authorize) ->
+                                authorize.requestMatchers("/login").permitAll()
+                                .requestMatchers("/register").permitAll()
+//                        .requestMatchers("/api/chats/create").permitAll()
 //                        .requestMatchers("/ws").permitAll()
-                        .anyRequest().authenticated()
+                                .requestMatchers("/api/auth").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

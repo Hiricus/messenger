@@ -38,7 +38,7 @@ public class MymessApplication {
 		//userDataService.removeById(102);
 
 
-//		chatService.createEmptyChat("Личка типа", false);
+		chatService.createEmptyChat("Личка типа", false);
 //		chatService.createEmptyChat("Групповая беседа типа", true);
 //		chatService.createEmptyChat("Личка типа, но чужая", false);
 //
