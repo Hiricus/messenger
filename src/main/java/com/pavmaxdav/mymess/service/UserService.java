@@ -67,12 +67,11 @@ public class UserService implements UserDetailsService {
         return Optional.of(userData);
     }
 
-    // Поиск пользователя по логину
+    // Поиск пользователя
     @Transactional
     public Optional<User> findUserByLogin(String login) {
         return userRepository.findUserByLogin(login);
     }
-
     @Transactional
     public Optional<User> findUserById(Integer id) {
         return userRepository.findById(id);

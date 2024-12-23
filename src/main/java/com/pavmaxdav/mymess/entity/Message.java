@@ -98,6 +98,9 @@ public class Message {
                 "id=" + id +
                 ", content='" + content + '\'' +
                 ", sentAt=" + sentAt +
+                ", author=" + author +
+                ", chat=" + chat +
+                ", attachedResource=" + attachedResource +
                 '}';
     }
 }

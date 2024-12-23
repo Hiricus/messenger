@@ -1,5 +1,6 @@
 package com.pavmaxdav.mymess.entity;
 
+import com.pavmaxdav.mymess.entity.attached.Settings;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 

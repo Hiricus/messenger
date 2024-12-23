@@ -9,6 +9,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,11 +34,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf((csrf) -> csrf
-                        .ignoringRequestMatchers("/login")
-                        .ignoringRequestMatchers("/register")
-                        .ignoringRequestMatchers("/admin/**")
-                )
+                .cors((cors) -> cors.disable())
+//                .csrf((csrf) -> csrf
+//                        .ignoringRequestMatchers("/login")
+//                        .ignoringRequestMatchers("/register")
+//                        .ignoringRequestMatchers("/admin/**")
+//                        .ignoringRequestMatchers("/api/chats/**")
+////                        .ignoringRequestMatchers("/api/**")
+//                        .ignoringRequestMatchers("/ws")
+//                )
+                .csrf((csrf) -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(Customizer.withDefaults())
 //                .formLogin(form -> form
 //                        .loginPage("/login")
@@ -46,6 +53,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/register").permitAll()
+                        .requestMatchers("/api/chats/create").permitAll()
+//                        .requestMatchers("/ws").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

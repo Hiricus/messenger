@@ -13,6 +13,8 @@ public class CreateMessageDTO {
 
 
     // Конструкторы
+
+    public CreateMessageDTO() {}
     public CreateMessageDTO(Integer userId, Integer chatId, String content) {
         this.userId = userId;
         this.chatId = chatId;
@@ -76,5 +78,18 @@ public class CreateMessageDTO {
     }
     public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
+    }
+
+
+    @Override
+    public String toString() {
+        return "CreateMessageDTO{" +
+                "userId=" + userId +
+                ", chatId=" + chatId +
+                ", content='" + content + '\'' +
+                ", resourceName='" + resourceName + '\'' +
+                ", resource='" + resource + '\'' +
+                ", resourceType=" + resourceType +
+                '}';
     }
 }

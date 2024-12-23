@@ -51,7 +51,7 @@ public class MymessApplication {
 
 //		chatService.removeChat(52);
 
-//		Optional<Message> optionalMessage = chatService.sendMessageToChat("Левое сообщение типа", "Hiricus", 2);
+//		Optional<Message> optionalMessage = chatService.sendMessageToChat("Левое сообщение типа", "Hiricus", 2, null);
 //		Optional<Message> optionalMessage = chatService.removeMessageFromChat(52, "Hiricus");
 //		System.out.println(optionalMessage);
 
@@ -63,10 +63,13 @@ public class MymessApplication {
 //		User user = userService.findUserByLogin("Bananaws").get();
 //		System.out.println(userMapper.toDTO(user));
 
-		List<MessageDTO> messageDTOS = chatService.getAllMessagesFromChat(1);
-		for (MessageDTO dto : messageDTOS) {
-			System.out.println(dto);
-		}
+//		chatService.getResource(452);
+
+//		chatService.removeChat(152);
+//		List<MessageDTO> messageDTOS = chatService.getAllMessagesFromChat(1);
+//		for (MessageDTO dto : messageDTOS) {
+//			System.out.println(dto);
+//		}
 	}
 
 	public static User createUserMe() {

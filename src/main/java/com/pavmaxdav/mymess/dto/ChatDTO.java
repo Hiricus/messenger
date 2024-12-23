@@ -43,6 +43,9 @@ public class ChatDTO {
         return userDTOS;
     }
     public MessageDTO getLastMessage() {
+        if (lastMessage == null) {
+            return null;
+        }
         return lastMessage;
     }
 

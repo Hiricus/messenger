@@ -57,7 +57,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .loadUserByUsername(username);
 
             // Если токен валиден, то аутентифицируем пользователя
-
             SecurityContext context = SecurityContextHolder.createEmptyContext();
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

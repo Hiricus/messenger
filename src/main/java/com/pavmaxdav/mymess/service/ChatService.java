@@ -1,6 +1,7 @@
 package com.pavmaxdav.mymess.service;
 
 import com.pavmaxdav.mymess.dto.MessageDTO;
+import com.pavmaxdav.mymess.entity.AttachedResource;
 import com.pavmaxdav.mymess.entity.Chat;
 import com.pavmaxdav.mymess.entity.Message;
 import com.pavmaxdav.mymess.entity.User;
@@ -43,8 +44,8 @@ public class ChatService {
     @Transactional
     public Optional<Chat> createEmptyChat(String name, boolean isGroup) {
         Chat chat = new Chat(name, isGroup);
-        chatRepository.save(chat);
-        return Optional.of(chat);
+        Chat savedChat = chatRepository.save(chat);
+        return Optional.of(savedChat);
     }
 
     // Удаление чата
@@ -65,6 +66,7 @@ public class ChatService {
 
         // Если не нашли пользователя или чата - возвращаем пустой Optional
         if (optionalChat.isEmpty() || optionalUser.isEmpty()) {
+            System.out.println("Can't find user in method: " + userLogin);
             return Optional.empty();
         }
 
@@ -72,6 +74,8 @@ public class ChatService {
         Chat chat = optionalChat.get();
         // Если чат личный и участников двое или больше - возвращаем пустой Optional
         if (!chat.isGroup() && (chat.getUserCount() >= 2)) {
+            System.out.println("Group mismatch for user: " + userLogin);
+            System.out.println(chat.isGroup() + " " + chat.getUserCount());
             return Optional.empty();
         }
 
@@ -97,7 +101,7 @@ public class ChatService {
 
     // Написать в чат
     @Transactional
-    public Optional<Message> sendMessageToChat(String messageContent, String authorLogin, Integer chatId) {
+    public Optional<Message> sendMessageToChat(String messageContent, String authorLogin, Integer chatId, AttachedResource attachedResource) {
         // Находим автора и чат
         Optional<User> optionalUser = userRepository.findUserByLogin(authorLogin);
         Optional<Chat> optionalChat = chatRepository.findById(chatId);
@@ -115,7 +119,15 @@ public class ChatService {
         }
 
         // Создаём сообщение и добавляем его в список сообщений чата
-        Message message = new Message(messageContent, author, chat);
+        // В зависимости от наличия вложений сохраняем их или нет
+        Message message;
+        if (attachedResource == null) {
+            message = new Message(messageContent, author, chat);
+        } else {
+//            System.out.println("Creating message with resource: " + attachedResource);
+            message = new Message(messageContent, author, chat, attachedResource);
+            attachedResource.setMessage(message);
+        }
         chat.addMessage(message);
         return Optional.of(message);
     }
@@ -145,6 +157,7 @@ public class ChatService {
     }
 
     // Получить все сообщения из чата, отсортированные по дате
+    @Transactional
     public List<MessageDTO> getAllMessagesFromChat(Integer chatId) {
         Optional<Chat> optionalChat = chatRepository.findById(chatId);
         // Если такого чата нет - возвращаем пустой список
@@ -162,6 +175,7 @@ public class ChatService {
         return messageDTOS;
     }
 
+    @Transactional
     public List<MessageDTO> getLastMessagesFromChat(Integer chatId, Integer lastN) {
         Optional<Chat> optionalChat = chatRepository.findById(chatId);
         // Если такого чата нет - возвращаем пустой список
@@ -178,5 +192,17 @@ public class ChatService {
         }
 
         return messageDTOS;
+    }
+
+
+
+
+
+
+    @Transactional
+    public AttachedResource getResource(Integer id) {
+        Message message = messageRepository.findById(id).get();
+        System.out.println(message);
+        return message.getAttachedResource();
     }
 }

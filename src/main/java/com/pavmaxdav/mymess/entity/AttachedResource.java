@@ -1,7 +1,10 @@
 package com.pavmaxdav.mymess.entity;
 
+import com.pavmaxdav.mymess.dto.AttachedResourceDTO;
 import com.pavmaxdav.mymess.entity.attached.ResourceType;
 import jakarta.persistence.*;
+
+import java.util.Arrays;
 
 @Entity
 @Table(name = "attached_resources")
@@ -15,7 +18,7 @@ public class AttachedResource {
 
     @Lob
     @Column(name = "resource", columnDefinition = "MEDIUMBLOB")
-    private byte[] resource = new byte[0];;
+    private byte[] resource = new byte[0];
 
     @Column(name = "resource_type")
     private ResourceType resourceType = ResourceType.IMAGE;
@@ -31,6 +34,11 @@ public class AttachedResource {
         this.name = name;
         this.resource = resource;
         this.resourceType = resourceType;
+    }
+    public AttachedResource(AttachedResourceDTO attachedResourceDTO) {
+        this.name = attachedResourceDTO.getName();
+        this.resource = attachedResourceDTO.getResourceByte();
+        this.resourceType = attachedResourceDTO.getResourceType();
     }
 
     // Геттеры
@@ -54,10 +62,24 @@ public class AttachedResource {
     public void setName(String name) {
         this.name = name;
     }
+    public void setMessage(Message message) {
+        this.message = message;
+    }
     public void setResource(byte[] resource) {
         this.resource = resource;
     }
     public void setResourceType(ResourceType resourceType) {
         this.resourceType = resourceType;
+    }
+
+
+    @Override
+    public String toString() {
+        return "AttachedResource{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", resource=" + Arrays.toString(resource) +
+                ", resourceType=" + resourceType +
+                '}';
     }
 }
