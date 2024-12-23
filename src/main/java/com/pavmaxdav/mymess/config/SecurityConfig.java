@@ -36,6 +36,7 @@ public class SecurityConfig {
                 .csrf((csrf) -> csrf
                         .ignoringRequestMatchers("/login")
                         .ignoringRequestMatchers("/register")
+                        .ignoringRequestMatchers("/api/**")
                         .ignoringRequestMatchers("/admin/**")
                 )
                 .httpBasic(Customizer.withDefaults())
@@ -46,6 +47,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/register").permitAll()
+                        .requestMatchers("/api/auth").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
